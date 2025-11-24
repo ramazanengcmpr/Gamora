@@ -4,6 +4,11 @@ import Deal from "../models/Deal.js";
 
 const router = express.Router();
 
+// Regex injection koruması için helper
+function escapeRegex(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 // GET /api/deals/search
 router.get("/search", async (req, res) => {
   try {
@@ -23,7 +28,9 @@ router.get("/search", async (req, res) => {
 
     // 1) Kelime araması (title, description, tags)
     if (q && q.trim() !== "") {
-      const regex = new RegExp(q.trim(), "i"); // büyük/küçük harfe duyarsız
+      const safeQuery = escapeRegex(q.trim());
+      const regex = new RegExp(safeQuery, "i"); // büyük/küçük harfe duyarsız, güvenli
+
       filter.$or = [
         { title: regex },
         { description: regex },
