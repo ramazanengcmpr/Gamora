@@ -3,7 +3,8 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const authMiddleware = require("../middleware/authMiddleware");
+// 🔴 ÖNEMLİ: Objeden sadece authMiddleware fonksiyonunu al
+const { authMiddleware } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -31,7 +32,9 @@ router.post("/register", async (req, res) => {
 
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(409).json({ message: "This email is already registered" });
+      return res
+        .status(409)
+        .json({ message: "This email is already registered" });
     }
 
     // Hash rounds: 12 = daha güçlü

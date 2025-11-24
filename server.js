@@ -1,23 +1,52 @@
+// server.js
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// ESM dosyalar
+import dealRoutes from "./routes/deal.js";
 import businessRequestRoutes from "./routes/businessRequest.js";
-import adminBusinessRequestsRoutes from "./routes/adminBusinessRequests.js";
+import adminBusinessRequestsRoutes from "./routes/adminBusinessRequest.js";
+import adminDealsRoutes from "./routes/adminDeals.js";
 
-// ...
+// CommonJS dosyalar (auth route + middleware)
+import authRoutesCjs from "./routes/auth.js";
+import authMiddlewarePkg from "./middleware/authMiddleware.js";
 
+// .env
+dotenv.config();
 
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+// __dirname (ESM için)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const authRoutes = require("./routes/auth");
-const authMiddleware = require("./middleware/authMiddleware");
+// CJS export'larını ayır
+const authRoutes = authRoutesCjs;              // routes/auth.js -> module.exports = router
+const { authMiddleware } = authMiddlewarePkg;  // { authMiddleware, requireAdmin }
+
+// Express app
 const app = express();
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use("/api/business-requests", businessRequestRoutes);          // mobil buton
-app.use("/api/admin/business-requests", adminBusinessRequestsRoutes); // panel
+
+// Statik uploads klasörü
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Public routes
+app.use("/api/deals", dealRoutes);
+app.use("/api/business-requests", businessRequestRoutes);
+
+// Admin routes
+app.use("/api/admin/business-requests", adminBusinessRequestsRoutes);
+app.use("/api/admin/deals", adminDealsRoutes);
+
+// Auth routes
+app.use("/api/auth", authRoutes);
 
 // Test endpoint
 app.get("/", (req, res) => {
@@ -31,8 +60,6 @@ app.get("/api/protected", authMiddleware, (req, res) => {
     user: req.user,
   });
 });
-// Auth routes
-app.use("/api/auth", authRoutes);
 
 // MongoDB connection
 mongoose
