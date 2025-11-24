@@ -1,3 +1,9 @@
+import businessRequestRoutes from "./routes/businessRequest.js";
+import adminBusinessRequestsRoutes from "./routes/adminBusinessRequests.js";
+
+// ...
+
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -10,6 +16,8 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use("/api/business-requests", businessRequestRoutes);          // mobil buton
+app.use("/api/admin/business-requests", adminBusinessRequestsRoutes); // panel
 
 // Test endpoint
 app.get("/", (req, res) => {
