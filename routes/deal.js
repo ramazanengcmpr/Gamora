@@ -78,4 +78,30 @@ router.get("/search", async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------
+// 🔥 YENİ EKLENDİ: Deal'ın imageUrl bilgisini dönen endpoint
+// GET /api/deals/:id/image
+// ---------------------------------------------------------
+router.get("/:id/image", async (req, res) => {
+  try {
+    const deal = await Deal.findById(req.params.id);
+
+    if (!deal || !deal.imageUrl) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Resim bulunamadı" });
+    }
+
+    res.json({
+      success: true,
+      imageUrl: deal.imageUrl,
+    });
+  } catch (err) {
+    console.error("Get deal image error:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error (get image)" });
+  }
+});
+
 export default router;

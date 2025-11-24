@@ -10,7 +10,11 @@ const dealSchema = new mongoose.Schema({
   price: Number,
   oldPrice: Number,
   isActive: { type: Boolean, default: true },
+   imageUrl: { type: String },   
   createdAt: { type: Date, default: Date.now },
-});
+},
+ { timestamps: true }
+);
+const Deal = mongoose.model("Deal", dealSchema);
 
-export default mongoose.model("Deal", dealSchema);
+export default Deal;
